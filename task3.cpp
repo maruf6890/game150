@@ -1,158 +1,157 @@
 #include <SDL2/SDL.h>
-#include <stdio.h>
 #include <iostream>
+using namespace std;
 
 #define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 700
-int R=50;
-SDL_Window *win = NULL;
-SDL_Renderer *rend = NULL;
-bool gameIsRunning=false;
-//for first circle
-int X=-R;
-int Y=SCREEN_HEIGHT/2;
-//for second circle
-int x=SCREEN_WIDTH/2;
-int y=SCREEN_HEIGHT-R;
-bool col=false;
-int r_color=255;
-int  b_color=0;
-int  f=0;
+#define SCREEN_HEIGHT 600
 
-int initializing(){
-if(SDL_Init(SDL_INIT_VIDEO)!=0){
-std::cout<<"Error: SDL failed to initialize\n"<<"SDL Error:"<<" "<<SDL_GetError()<<'\n';
-return 0;
-}
+SDL_Window* window = NULL;
+SDL_Renderer* renderer = NULL;
+bool isRunning;
+Uint32 startTime;
+Uint32 currentTime;
+bool collisionOccurred = false; // Flag to track collision
+
+// Moving balls
+int r = 50;
+int x = -2*r;
+int y = SCREEN_HEIGHT / 2;
 
 
- win = SDL_CreateWindow("Drawing Circle",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,SCREEN_WIDTH,SCREEN_HEIGHT, 0);
-if (!win)
-    {
-       std::cout<<"Error: SDL failed to open window\n"<<"SDL Error:"<<" "<<SDL_GetError()<<'\n';
-       return 0;;
+//movable balls
+int R = 50;
+int X = SCREEN_WIDTH / 2;
+int Y = SCREEN_HEIGHT - R;
+
+bool initializeWindow() {
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        cout << "Error: SDL initialization failed\nSDL Error: " << SDL_GetError() << endl;
+        isRunning = false;
+        return false;
     }
 
-
-
-    rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
-    if (!rend)
-    {
-        std::cout<<"Error: SDL failed to create renderer\n"<<"SDL Error:"<<" "<<SDL_GetError()<<'\n';
-        return 0;;
+    window = SDL_CreateWindow("Task2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (!window) {
+        cout << "Error: Failed to create window\nSDL Error: " << SDL_GetError() << endl;
+        isRunning = false;
+        return false;
     }
 
-	return 1;
-}
-
-
-bool collision(int x,int y,int X,int Y)
-{
-int d;
-d=(x-X)*(x-X)+(y-Y)*(y-Y);
-if(d<=4*R*R) return true;
-return false;
-}
-
-
-void update()
-{
- col=collision(x,y,X,Y);
- if(col) {
-    
-    X=-R;r_color=0;b_color=255;
-    if(f==0){r_color=0;b_color=255;f=1;}
-    else {r_color=255;b_color=0;f=0;}
-    
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        cout << "Error: Failed to create renderer\nSDL Error: " << SDL_GetError() << endl;
+        isRunning = false;
+        return false;
     }
 
-else
-{
- X+=2;
-if(X>=SCREEN_WIDTH+R) X=0;
+    return true;
 }
 
-
-}
-void draw_Circle( int centerX, int centerY, int radius) {
-    for (int x = -radius; x <= radius; x++) {
-        for (int y = -radius; y <= radius; y++) {
-            if (x*x + y*y <= radius*radius) {
-                SDL_RenderDrawPoint(rend, centerX + x, centerY + y);
+void Events() {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            isRunning = false;
+        }
+        if (event.type == SDL_KEYDOWN) {
+            switch (event.key.keysym.sym) {
+                case SDLK_UP:
+                    if (Y > R) Y -= 10;
+                    break;
+                case SDLK_LEFT:
+                    if (X > R) X -= 10;
+                    break;
+                case SDLK_RIGHT:
+                    if (X < SCREEN_WIDTH - R) X += 10;
+                    break;
+                case SDLK_DOWN:
+                    if (Y < SCREEN_HEIGHT - R) Y += 10;
+                    break;
+                default:
+                    break;
             }
         }
     }
 }
 
-
-
-void Draw()
-{
-
-    SDL_SetRenderDrawColor(rend, 0, 255, 0, 0);
-	SDL_RenderClear(rend);
-
-    update();
-
-	SDL_SetRenderDrawColor(rend, r_color, 0,b_color, 0);
-    draw_Circle(X,Y,R);
-
-    SDL_SetRenderDrawColor(rend, b_color, 0,r_color, 0);
-    draw_Circle(x,y,R);
-	SDL_RenderPresent(rend);
-
+bool collision() {
+    int d = (x - X) * (x - X) + (y - Y) * (y - Y);
+    int sumRadii = (r + R) * (r + R);
+    return d <= sumRadii;
 }
 
-void  event_loop()
-{
-  SDL_Event event;
-
-  while(SDL_PollEvent(&event))
-     {
-       if(event.type==SDL_QUIT) {gameIsRunning=false; break;}
-       else if (event.type == SDL_KEYDOWN) {
-                        if(event.key.keysym.sym==SDLK_UP) 
-                        {
-                            y-=10;
-                            if(y==R) {x=SCREEN_WIDTH/2;y=SCREEN_HEIGHT-R;}
-                        }
-                        if(event.key.keysym.sym== SDLK_DOWN)
-                        {
-                             y+=10;
-                            if(y+R>SCREEN_HEIGHT) {x=SCREEN_WIDTH/2;y=SCREEN_HEIGHT-R;}
-
-                        }
-                        if(event.key.keysym.sym== SDLK_LEFT)
-                        {
-                            x-=10;
-                            if(x==R) {x=SCREEN_WIDTH/2;y=SCREEN_HEIGHT-R;}
-                             
-                        }
-                        if(event.key.keysym.sym==SDLK_RIGHT)
-                        {
-                          
-                            x+=10;
-                            if(x+R==SCREEN_WIDTH) {x=SCREEN_WIDTH/2;y=SCREEN_HEIGHT-R;}
-                        }
-                    }
-     
-     }
-
+void increment() {
+    x += 20; // Increase x position at a faster rate
+    if (x >= SCREEN_WIDTH + r) x = -r;
+    if (collision()) {
+        x = -2 * r; // Reset position if collision occurs
+        collisionOccurred = true; // Set collision flag
+    }
 }
 
-
-int main(int argc,char *argv[])
-{
-gameIsRunning=initializing();
-
-while(gameIsRunning)
-{
-	event_loop();
-    Draw();
+void update() {
+    currentTime = SDL_GetTicks();
+    Uint32 passedTime = currentTime - startTime;
+    if (passedTime >= 16) { // Update approximately every 16 milliseconds (60 FPS)
+        increment();
+        startTime = currentTime;
+    }
 }
 
-SDL_DestroyWindow(win);
-SDL_Quit();
+void drawFilledCircle(int cx, int cy, int radius) {
+    for (int y = -radius; y <= radius; y++) {
+        for (int x = -radius; x <= radius; x++) {
+            if (x * x + y * y <= radius * radius) {
+                SDL_RenderDrawPoint(renderer, cx + x, cy + y);
+            }
+        }
+    }
+}
 
-return 0;
+void render() {
+    // Clear the screen
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+
+    // Draw the balls
+    if (collisionOccurred) {
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Change color if collision occurred
+    } else {
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    }
+    drawFilledCircle(x, y, r);
+
+    if (collisionOccurred) {
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Change color if collision occurred
+    } else {
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    }
+    drawFilledCircle(X, Y, R);
+
+    // Reset collision flag
+    collisionOccurred = false;
+
+    // Present the renderer
+    SDL_RenderPresent(renderer);
+}
+
+void clear() {
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+int main(int argc, char** argv) {
+    isRunning = initializeWindow();
+    startTime = SDL_GetTicks();
+
+    while (isRunning) {
+        Events();
+        update();
+        render();
+    }
+
+    clear();
+
+    return 0;
 }
