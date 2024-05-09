@@ -1,9 +1,9 @@
 #include <SDL2/SDL.h>
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH 600
+#define SCREEN_HEIGHT 450
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -25,7 +25,7 @@ bool initializeWindow() {
         return false;
     }
 
-    window = SDL_CreateWindow("Task2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Blinking Circle", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         cout << "Error: Failed to create window\nSDL Error: " << SDL_GetError() << endl;
         isRunning = false;
@@ -59,7 +59,7 @@ void setup() {
 
 void increment() {
     ball.radius += 2; // Increase radius at a faster rate
-    if (ball.radius >= 150) ball.radius = 2;
+    if (ball.radius >= min(SCREEN_HEIGHT/2,SCREEN_WIDTH/2)) ball.radius = 2;
 }
 
 void update() {
@@ -83,11 +83,11 @@ void draw() {
 
 void render() {
     // Clear the screen
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
     // Draw the ball
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 255, 234, 2, 255);
     draw();
 
     // Present the renderer

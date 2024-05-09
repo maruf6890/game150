@@ -10,15 +10,14 @@ SDL_Renderer* renderer = NULL;
 bool isRunning;
 Uint32 startTime;
 Uint32 currentTime;
-bool collisionOccurred = false; // Flag to track collision
+bool collision = false; // Flag to track collision
 
 // Moving balls
 int r = 50;
-int x = -2*r;
+int x = -2 * r;
 int y = SCREEN_HEIGHT / 2;
 
-
-//movable balls
+// Movable balls
 int R = 50;
 int X = SCREEN_WIDTH / 2;
 int Y = SCREEN_HEIGHT - R;
@@ -30,7 +29,7 @@ bool initializeWindow() {
         return false;
     }
 
-    window = SDL_CreateWindow("Task2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Collision", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         cout << "Error: Failed to create window\nSDL Error: " << SDL_GetError() << endl;
         isRunning = false;
@@ -74,7 +73,7 @@ void Events() {
     }
 }
 
-bool collision() {
+bool checkCollision() {
     int d = (x - X) * (x - X) + (y - Y) * (y - Y);
     int sumRadii = (r + R) * (r + R);
     return d <= sumRadii;
@@ -83,10 +82,6 @@ bool collision() {
 void increment() {
     x += 20; // Increase x position at a faster rate
     if (x >= SCREEN_WIDTH + r) x = -r;
-    if (collision()) {
-        x = -2 * r; // Reset position if collision occurs
-        collisionOccurred = true; // Set collision flag
-    }
 }
 
 void update() {
@@ -95,7 +90,11 @@ void update() {
     if (passedTime >= 16) { // Update approximately every 16 milliseconds (60 FPS)
         increment();
         startTime = currentTime;
+
+        // Check for collision after each update
+        collision = checkCollision();
     }
+    SDL_Delay(16);
 }
 
 void drawFilledCircle(int cx, int cy, int radius) {
@@ -110,26 +109,23 @@ void drawFilledCircle(int cx, int cy, int radius) {
 
 void render() {
     // Clear the screen
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(renderer, 158, 240, 242, 255);
     SDL_RenderClear(renderer);
 
     // Draw the balls
-    if (collisionOccurred) {
+    if (collision) {
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Change color if collision occurred
     } else {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     }
     drawFilledCircle(x, y, r);
 
-    if (collisionOccurred) {
+    if (collision) {
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Change color if collision occurred
     } else {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     }
     drawFilledCircle(X, Y, R);
-
-    // Reset collision flag
-    collisionOccurred = false;
 
     // Present the renderer
     SDL_RenderPresent(renderer);

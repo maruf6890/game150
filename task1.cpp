@@ -25,7 +25,7 @@ bool initializeWindow() {
         return false;
     }
 
-    window = SDL_CreateWindow("Task1", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Circle", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         cout << "Error: Failed to create window\nSDL Error: " << SDL_GetError() << endl;
         isRunning = false;
@@ -79,7 +79,7 @@ void render() {
     SDL_RenderClear(renderer);
 
     // Draw the ball
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 200, 14, 9, 255);
     draw();
 
     // Present the renderer
