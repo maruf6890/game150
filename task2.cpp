@@ -83,11 +83,11 @@ void draw() {
 
 void render() {
     // Clear the screen
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 210, 126, 26, 255);
     SDL_RenderClear(renderer);
 
     // Draw the ball
-    SDL_SetRenderDrawColor(renderer, 255, 234, 2, 255);
+    SDL_SetRenderDrawColor(renderer, 36, 48, 60, 255);
     draw();
 
     // Present the renderer

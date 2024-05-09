@@ -109,21 +109,21 @@ void drawFilledCircle(int cx, int cy, int radius) {
 
 void render() {
     // Clear the screen
-    SDL_SetRenderDrawColor(renderer, 158, 240, 242, 255);
+    SDL_SetRenderDrawColor(renderer, 210, 126, 26, 255);
     SDL_RenderClear(renderer);
 
     // Draw the balls
     if (collision) {
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Change color if collision occurred
+        SDL_SetRenderDrawColor(renderer, 133, 55, 64, 255); // Change color if collision occurred
     } else {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(renderer, 36, 48, 60, 255);
     }
     drawFilledCircle(x, y, r);
 
     if (collision) {
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Change color if collision occurred
+        SDL_SetRenderDrawColor(renderer, 133, 55, 64, 255); // Change color if collision occurred
     } else {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(renderer, 36, 48, 60, 255);
     }
     drawFilledCircle(X, Y, R);
 
